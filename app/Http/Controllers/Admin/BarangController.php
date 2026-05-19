@@ -12,6 +12,15 @@ use Inertia\Inertia;
 
 class BarangController extends Controller
 {
+    // FUNGSI HELPER UNTUK MEMBERSIHKAN FORMAT HARGA
+    private function cleanPrice($price)
+    {
+        // Hapus titik (pemisah ribuan), spasi, dan koma
+        $clean = str_replace(['.', ' ', ','], '', $price);
+        // Konversi ke integer
+        return (int) $clean;
+    }
+
     public function index()
     {
         $barangs = Barang::with('kategori')
@@ -22,13 +31,14 @@ class BarangController extends Controller
                 'kode_barang' => $barang->kode_barang,
                 'nama_barang' => $barang->nama_barang,
                 'slug' => $barang->slug,
+                'kategori_id' => $barang->kategori_id,
                 'kategori' => $barang->kategori ? [
                     'id' => $barang->kategori->id,
                     'nama_kategori' => $barang->kategori->nama_kategori,
                 ] : null,
                 'ukuran' => $barang->ukuran,
                 'warna' => $barang->warna,
-                'harga_sewa' => $barang->harga_sewa,
+                'harga_sewa' => (float) $barang->harga_sewa,
                 'stok' => $barang->stok,
                 'status' => $barang->status,
                 'gambar' => $barang->gambar_utama,
@@ -54,7 +64,7 @@ class BarangController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'kode_barang' => 'required|string|max:20|unique:barangs',
+            'kode_barang' => 'nullable|string|max:20|unique:barangs',
             'nama_barang' => 'required|string|max:100',
             'kategori_id' => 'required|exists:kategoris,id',
             'ukuran' => 'nullable|string|max:50',
@@ -69,6 +79,16 @@ class BarangController extends Controller
         $data = $request->except('gambar_utama');
         $data['slug'] = Str::slug($request->nama_barang);
 
+        // PERBAIKI: Bersihkan format harga
+        $data['harga_sewa'] = $this->cleanPrice($request->harga_sewa);
+
+        // Generate kode_barang otomatis jika tidak diisi
+        if (empty($data['kode_barang'])) {
+            $lastBarang = Barang::orderBy('id', 'desc')->first();
+            $lastNumber = $lastBarang ? intval(substr($lastBarang->kode_barang, -4)) : 0;
+            $data['kode_barang'] = 'BRG-' . str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+        }
+
         if ($request->hasFile('gambar_utama')) {
             $path = $request->file('gambar_utama')->store('barang', 'public');
             $data['gambar_utama'] = $path;
@@ -80,5 +100,108 @@ class BarangController extends Controller
             ->with('success', 'Barang berhasil ditambahkan');
     }
 
-    // ... method lainnya (edit, update, destroy)
+    public function show($id)
+    {
+        $barang = Barang::with('kategori')->findOrFail($id);
+
+        return Inertia::render('Admin/Barang/Show', [
+            'barang' => [
+                'id' => $barang->id,
+                'kode_barang' => $barang->kode_barang,
+                'nama_barang' => $barang->nama_barang,
+                'slug' => $barang->slug,
+                'kategori' => $barang->kategori ? [
+                    'id' => $barang->kategori->id,
+                    'nama_kategori' => $barang->kategori->nama_kategori,
+                ] : null,
+                'ukuran' => $barang->ukuran,
+                'warna' => $barang->warna,
+                'harga_sewa' => (float) $barang->harga_sewa,
+                'stok' => $barang->stok,
+                'deskripsi' => $barang->deskripsi,
+                'status' => $barang->status,
+                'gambar_utama' => $barang->gambar_utama,
+            ]
+        ]);
+    }
+
+    public function edit($id)
+    {
+        $barang = Barang::findOrFail($id);
+        $kategoris = Kategori::where('is_active', true)->get();
+
+        return Inertia::render('Admin/Barang/Edit', [
+            'barang' => [
+                'id' => $barang->id,
+                'kode_barang' => $barang->kode_barang,
+                'nama_barang' => $barang->nama_barang,
+                'kategori_id' => $barang->kategori_id,
+                'ukuran' => $barang->ukuran,
+                'warna' => $barang->warna,
+                'harga_sewa' => (float) $barang->harga_sewa,
+                'stok' => $barang->stok,
+                'deskripsi' => $barang->deskripsi,
+                'status' => $barang->status,
+                'gambar_utama' => $barang->gambar_utama,
+            ],
+            'kategoris' => $kategoris
+        ]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $barang = Barang::findOrFail($id);
+
+        $request->validate([
+            'kode_barang' => 'required|string|max:20|unique:barangs,kode_barang,' . $id,
+            'nama_barang' => 'required|string|max:100',
+            'kategori_id' => 'required|exists:kategoris,id',
+            'ukuran' => 'nullable|string|max:50',
+            'warna' => 'nullable|string|max:30',
+            'harga_sewa' => 'required|numeric|min:0',
+            'stok' => 'required|integer|min:0',
+            'deskripsi' => 'nullable|string',
+            'status' => 'required|in:tersedia,disewa,maintenance',
+        ]);
+
+        $data = $request->except('gambar_utama');
+        $data['slug'] = Str::slug($request->nama_barang);
+
+        // PERBAIKI: Bersihkan format harga
+        $data['harga_sewa'] = $this->cleanPrice($request->harga_sewa);
+
+        if ($request->hasFile('gambar_utama')) {
+            // Hapus gambar lama jika ada
+            if ($barang->gambar_utama) {
+                Storage::disk('public')->delete($barang->gambar_utama);
+            }
+            $path = $request->file('gambar_utama')->store('barang', 'public');
+            $data['gambar_utama'] = $path;
+        }
+
+        $barang->update($data);
+
+        return redirect()->route('admin.barang.index')
+            ->with('success', 'Barang berhasil diupdate');
+    }
+
+    public function destroy($id)
+    {
+        $barang = Barang::findOrFail($id);
+
+        // Cek apakah barang sedang disewa
+        if ($barang->status === 'disewa') {
+            return back()->with('error', 'Tidak dapat menghapus barang yang sedang disewa');
+        }
+
+        // Hapus gambar jika ada
+        if ($barang->gambar_utama) {
+            Storage::disk('public')->delete($barang->gambar_utama);
+        }
+
+        $barang->delete();
+
+        return redirect()->route('admin.barang.index')
+            ->with('success', 'Barang berhasil dihapus');
+    }
 }

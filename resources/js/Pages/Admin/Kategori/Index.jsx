@@ -6,8 +6,6 @@ import {
     PencilIcon,
     TrashIcon,
     TagIcon,
-    ArrowUpIcon,
-    ArrowDownIcon,
 } from "@heroicons/react/24/outline";
 
 export default function KategoriIndex({ kategoris }) {
@@ -31,23 +29,36 @@ export default function KategoriIndex({ kategoris }) {
         });
     };
 
+    // Warna badge berdasarkan kategori (solid colors)
+    const getCategoryColor = (namaKategori) => {
+        const colors = {
+            Jas: "bg-blue-500",
+            Gaun: "bg-pink-500",
+            Sepatu: "bg-amber-500",
+            Aksesoris: "bg-purple-500",
+            Kostum: "bg-green-500",
+            Dasi: "bg-red-500",
+        };
+        return colors[namaKategori] || "bg-[#C5A059]";
+    };
+
     return (
         <AdminLayout title="Manajemen Kategori">
             <div className="py-6">
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900">
+                        <h1 className="text-2xl font-semibold text-gray-800">
                             Manajemen Kategori
                         </h1>
-                        <p className="text-sm text-gray-600 mt-1">
+                        <p className="text-sm text-gray-500 mt-1">
                             Kelola kategori untuk jas, gaun, sepatu, aksesoris,
                             dan lainnya
                         </p>
                     </div>
                     <Link
                         href="/admin/kategori/create"
-                        className="mt-4 sm:mt-0 inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-[#C5A059] to-[#D4AF37] text-[#0A192F] rounded-lg font-medium hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+                        className="mt-4 sm:mt-0 inline-flex items-center px-5 py-2.5 bg-[#0A192F] text-white rounded-lg font-medium hover:bg-[#1E2F4A] transition-all duration-300 shadow-sm"
                     >
                         <PlusIcon className="w-5 h-5 mr-2" />
                         Tambah Kategori Baru
@@ -61,7 +72,7 @@ export default function KategoriIndex({ kategoris }) {
                         placeholder="Cari kategori..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent"
+                        className="w-full max-w-md px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] transition-all duration-300"
                     />
                 </div>
 
@@ -70,24 +81,10 @@ export default function KategoriIndex({ kategoris }) {
                     {filteredKategoris.map((kategori) => (
                         <div
                             key={kategori.id}
-                            className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300"
+                            className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300"
                         >
                             <div
-                                className={`h-2 ${
-                                    kategori.nama_kategori === "Jas"
-                                        ? "bg-blue-500"
-                                        : kategori.nama_kategori === "Gaun"
-                                          ? "bg-pink-500"
-                                          : kategori.nama_kategori === "Sepatu"
-                                            ? "bg-amber-500"
-                                            : kategori.nama_kategori ===
-                                                "Aksesoris"
-                                              ? "bg-purple-500"
-                                              : kategori.nama_kategori ===
-                                                  "Kostum"
-                                                ? "bg-green-500"
-                                                : "bg-[#C5A059]"
-                                }`}
+                                className={`h-2 ${getCategoryColor(kategori.nama_kategori)}`}
                             ></div>
                             <div className="p-5">
                                 <div className="flex items-center justify-between mb-3">
@@ -96,7 +93,7 @@ export default function KategoriIndex({ kategoris }) {
                                             <TagIcon className="w-6 h-6 text-[#C5A059]" />
                                         </div>
                                         <div>
-                                            <h3 className="font-semibold text-gray-900">
+                                            <h3 className="font-semibold text-gray-800">
                                                 {kategori.nama_kategori}
                                             </h3>
                                             <p className="text-xs text-gray-500">
@@ -108,8 +105,8 @@ export default function KategoriIndex({ kategoris }) {
                                     <span
                                         className={`px-2 py-1 text-xs rounded-full ${
                                             kategori.is_active
-                                                ? "bg-green-100 text-green-800"
-                                                : "bg-red-100 text-red-800"
+                                                ? "bg-green-100 text-green-700"
+                                                : "bg-red-100 text-red-700"
                                         }`}
                                     >
                                         {kategori.is_active
@@ -141,17 +138,17 @@ export default function KategoriIndex({ kategoris }) {
                                                 `/admin/kategori/${kategori.id}/edit`,
                                             )
                                         }
-                                        className="p-2 text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded-lg transition-colors"
+                                        className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors"
                                         title="Edit"
                                     >
                                         <PencilIcon className="w-5 h-5" />
                                     </button>
                                     <button
                                         onClick={() => toggleActive(kategori)}
-                                        className={`p-2 rounded-lg transition-colors ${
+                                        className={`px-3 py-1 rounded-lg text-xs font-medium transition-all duration-300 ${
                                             kategori.is_active
-                                                ? "text-red-600 hover:text-red-900 hover:bg-red-50"
-                                                : "text-green-600 hover:text-green-900 hover:bg-green-50"
+                                                ? "bg-red-100 text-red-600 hover:bg-red-200"
+                                                : "bg-green-100 text-green-600 hover:bg-green-200"
                                         }`}
                                         title={
                                             kategori.is_active
@@ -159,19 +156,13 @@ export default function KategoriIndex({ kategoris }) {
                                                 : "Aktifkan"
                                         }
                                     >
-                                        {kategori.is_active ? (
-                                            <span className="text-sm font-medium">
-                                                Nonaktif
-                                            </span>
-                                        ) : (
-                                            <span className="text-sm font-medium">
-                                                Aktif
-                                            </span>
-                                        )}
+                                        {kategori.is_active
+                                            ? "Nonaktif"
+                                            : "Aktif"}
                                     </button>
                                     <button
                                         onClick={() => destroy(kategori)}
-                                        className="p-2 text-red-600 hover:text-red-900 hover:bg-red-50 rounded-lg transition-colors"
+                                        className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors"
                                         title="Hapus"
                                     >
                                         <TrashIcon className="w-5 h-5" />
@@ -184,9 +175,9 @@ export default function KategoriIndex({ kategoris }) {
 
                 {/* Empty State */}
                 {filteredKategoris.length === 0 && (
-                    <div className="text-center py-12">
+                    <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
                         <TagIcon className="mx-auto h-12 w-12 text-gray-400" />
-                        <h3 className="mt-2 text-sm font-medium text-gray-900">
+                        <h3 className="mt-2 text-sm font-medium text-gray-800">
                             Tidak ada kategori
                         </h3>
                         <p className="mt-1 text-sm text-gray-500">
@@ -194,6 +185,15 @@ export default function KategoriIndex({ kategoris }) {
                                 ? "Coba dengan kata kunci lain"
                                 : "Belum ada kategori yang ditambahkan"}
                         </p>
+                        {!searchTerm && (
+                            <Link
+                                href="/admin/kategori/create"
+                                className="mt-4 inline-flex items-center px-4 py-2 bg-[#0A192F] text-white rounded-lg text-sm font-medium hover:bg-[#1E2F4A] transition-all duration-300"
+                            >
+                                <PlusIcon className="w-4 h-4 mr-2" />
+                                Tambah Kategori Pertama
+                            </Link>
+                        )}
                     </div>
                 )}
             </div>

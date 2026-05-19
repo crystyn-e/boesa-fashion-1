@@ -12,6 +12,43 @@ use Inertia\Inertia;
 
 class PengembalianController extends Controller
 {
+    // Fungsi helper untuk hitung denda dengan aman
+    private function hitungDenda($tglHarusKembali, $tglSekarang = null)
+    {
+        if ($tglSekarang === null) {
+            $tglSekarang = now();
+        }
+
+        $tglHarus = new \DateTime($tglHarusKembali);
+        $tglNow = new \DateTime($tglSekarang->toDateString());
+
+        if ($tglNow > $tglHarus) {
+            $interval = $tglHarus->diff($tglNow);
+            $hariTerlambat = (int) $interval->days;
+            return $hariTerlambat * 50000;
+        }
+
+        return 0;
+    }
+
+    // Fungsi helper untuk hitung hari terlambat
+    private function hitungHariTerlambat($tglHarusKembali, $tglSekarang = null)
+    {
+        if ($tglSekarang === null) {
+            $tglSekarang = now();
+        }
+
+        $tglHarus = new \DateTime($tglHarusKembali);
+        $tglNow = new \DateTime($tglSekarang->toDateString());
+
+        if ($tglNow > $tglHarus) {
+            $interval = $tglHarus->diff($tglNow);
+            return (int) $interval->days;
+        }
+
+        return 0;
+    }
+
     public function index()
     {
         // Ambil transaksi dengan status 'sewa' yang masih ada barang belum kembali
@@ -23,11 +60,9 @@ class PengembalianController extends Controller
             ->orderBy('tgl_harus_kembali')
             ->get()
             ->map(function ($transaksi) {
-                // Hitung denda jika telat
-                $hariIni = now();
-                $tglHarusKembali = $transaksi->tgl_harus_kembali;
-                $hariTerlambat = $hariIni->gt($tglHarusKembali) ? $hariIni->diffInDays($tglHarusKembali) : 0;
-                $denda = $hariTerlambat * 50000;
+                // Hitung denda menggunakan fungsi helper
+                $hariTerlambat = $this->hitungHariTerlambat($transaksi->tgl_harus_kembali);
+                $denda = $this->hitungDenda($transaksi->tgl_harus_kembali);
 
                 // Hitung progress barang
                 $totalBarang = $transaksi->detailTransaksis->count();
@@ -40,9 +75,9 @@ class PengembalianController extends Controller
                     'status_transaksi' => $transaksi->status,
                     'tgl_sewa' => $transaksi->tgl_sewa->format('d/m/Y'),
                     'tgl_harus_kembali' => $transaksi->tgl_harus_kembali->format('d/m/Y'),
-                    'total_harga' => $transaksi->total_harga,
-                    'dp' => $transaksi->dp,
-                    'sisa' => $transaksi->sisa_pembayaran,
+                    'total_harga' => (float) $transaksi->total_harga,
+                    'dp' => (float) $transaksi->dp,
+                    'sisa' => (float) $transaksi->sisa_pembayaran,
                     'denda' => $denda,
                     'hari_terlambat' => $hariTerlambat,
                     'total_barang' => $totalBarang,
@@ -77,11 +112,9 @@ class PengembalianController extends Controller
                 ->with('error', 'Transaksi tidak ditemukan atau sudah selesai');
         }
 
-        // Hitung denda
-        $hariIni = now();
-        $tglHarusKembali = $transaksi->tgl_harus_kembali;
-        $hariTerlambat = $hariIni->gt($tglHarusKembali) ? $hariIni->diffInDays($tglHarusKembali) : 0;
-        $denda = $hariTerlambat * 50000;
+        // Hitung denda menggunakan fungsi helper
+        $hariTerlambat = $this->hitungHariTerlambat($transaksi->tgl_harus_kembali);
+        $denda = $this->hitungDenda($transaksi->tgl_harus_kembali);
 
         return Inertia::render('Pelayan/Pengembalian/Show', [
             'transaksi' => [
@@ -93,9 +126,9 @@ class PengembalianController extends Controller
                 ],
                 'tgl_sewa' => $transaksi->tgl_sewa->format('Y-m-d'),
                 'tgl_harus_kembali' => $transaksi->tgl_harus_kembali->format('Y-m-d'),
-                'total_harga' => $transaksi->total_harga,
-                'dp' => $transaksi->dp,
-                'sisa' => $transaksi->sisa_pembayaran,
+                'total_harga' => (float) $transaksi->total_harga,
+                'dp' => (float) $transaksi->dp,
+                'sisa' => (float) $transaksi->sisa_pembayaran,
                 'denda' => $denda,
                 'hari_terlambat' => $hariTerlambat,
                 'deposit_tipe' => $transaksi->deposit_tipe,
@@ -109,7 +142,7 @@ class PengembalianController extends Controller
                             'ukuran' => $detail->barang->ukuran ?? '-',
                             'kategori' => $detail->barang->kategori->nama_kategori ?? '-',
                         ],
-                        'harga_sewa' => $detail->harga_sewa,
+                        'harga_sewa' => (float) $detail->harga_sewa,
                         'status_kembali' => $detail->status_kembali,
                     ];
                 }),
@@ -130,8 +163,11 @@ class PengembalianController extends Controller
         try {
             $transaksi = Transaksi::findOrFail($id);
             $tglKembali = now()->toDateString();
-            $hariTerlambatGlobal = 0;
-            $dendaGlobal = 0;
+
+            // Hitung keterlambatan dengan fungsi helper
+            $tglKembaliObj = now();
+            $hariTerlambatGlobal = $this->hitungHariTerlambat($transaksi->tgl_harus_kembali, $tglKembaliObj);
+            $dendaGlobal = $this->hitungDenda($transaksi->tgl_harus_kembali, $tglKembaliObj);
 
             // Proses barang yang dikembalikan
             foreach ($request->detail_ids as $detailId) {
@@ -154,12 +190,6 @@ class PengembalianController extends Controller
                 ->count();
 
             if ($belumKembali == 0) {
-                // Hitung denda final
-                $tglHarusKembali = $transaksi->tgl_harus_kembali;
-                $tglKembaliObj = now();
-                $hariTerlambatGlobal = $tglKembaliObj->gt($tglHarusKembali) ? $tglKembaliObj->diffInDays($tglHarusKembali) : 0;
-                $dendaGlobal = $hariTerlambatGlobal * 50000;
-
                 // Update transaksi menjadi selesai
                 $transaksi->update([
                     'status' => 'selesai',
@@ -193,11 +223,10 @@ class PengembalianController extends Controller
             $transaksi = Transaksi::with('detailTransaksis')->findOrFail($id);
             $tglKembali = now()->toDateString();
 
-            // Hitung keterlambatan
-            $tglHarusKembali = $transaksi->tgl_harus_kembali;
+            // Hitung keterlambatan dengan fungsi helper
             $tglKembaliObj = now();
-            $hariTerlambat = $tglKembaliObj->gt($tglHarusKembali) ? $tglKembaliObj->diffInDays($tglHarusKembali) : 0;
-            $denda = $hariTerlambat * 50000;
+            $hariTerlambat = $this->hitungHariTerlambat($transaksi->tgl_harus_kembali, $tglKembaliObj);
+            $denda = $this->hitungDenda($transaksi->tgl_harus_kembali, $tglKembaliObj);
 
             // Update semua detail transaksi
             foreach ($transaksi->detailTransaksis as $detail) {

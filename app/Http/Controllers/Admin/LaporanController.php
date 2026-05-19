@@ -43,6 +43,21 @@ class LaporanController extends Controller
         $transaksis = $query->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($t) {
+                // HITUNG DENDA BERDASARKAN TANGGAL KEMBALI
+                $denda = 0;
+                if ($t->tgl_kembali && $t->tgl_kembali > $t->tgl_harus_kembali) {
+                    $hariTerlambat = $t->tgl_kembali->diffInDays($t->tgl_harus_kembali);
+                    $denda = $hariTerlambat * 50000;
+                }
+
+                // ATAU jika belum ada tgl_kembali, gunakan denda dari database
+                if ($denda == 0 && $t->denda > 0) {
+                    $denda = $t->denda;
+                }
+
+                $totalHarga = is_numeric($t->total_harga) ? floatval($t->total_harga) : 0;
+                $dp = is_numeric($t->dp) ? floatval($t->dp) : 0;
+
                 return [
                     'id' => $t->id,
                     'kode_transaksi' => $t->kode_transaksi,
@@ -50,10 +65,10 @@ class LaporanController extends Controller
                     'tgl_sewa' => $t->tgl_sewa->format('d/m/Y'),
                     'tgl_harus_kembali' => $t->tgl_harus_kembali->format('d/m/Y'),
                     'tgl_kembali' => $t->tgl_kembali?->format('d/m/Y'),
-                    'total_harga' => $t->total_harga,
-                    'dp' => $t->dp,
-                    'sisa' => $t->sisa_pembayaran,
-                    'denda' => $t->denda,
+                    'total_harga' => $totalHarga,
+                    'dp' => $dp,
+                    'sisa' => floatval($t->sisa_pembayaran),
+                    'denda' => $denda,
                     'deposit_tipe' => $t->deposit_tipe === 'uang' ? 'Uang' : 'KTP',
                     'status' => $t->status,
                     'created_at' => $t->created_at->format('d/m/Y H:i'),
@@ -85,10 +100,10 @@ class LaporanController extends Controller
                     'kategori' => $b->kategori?->nama_kategori ?? '-',
                     'ukuran' => $b->ukuran ?? '-',
                     'warna' => $b->warna ?? '-',
-                    'harga_sewa' => $b->harga_sewa,
+                    'harga_sewa' => floatval($b->harga_sewa),
                     'stok' => $b->stok,
                     'total_disewa' => $b->detail_transaksis_count,
-                    'total_pendapatan' => $b->detail_transaksis_count * $b->harga_sewa,
+                    'total_pendapatan' => $b->detail_transaksis_count * floatval($b->harga_sewa),
                     'status' => $b->status,
                 ];
             });

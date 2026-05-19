@@ -12,6 +12,16 @@ import {
 export default function PengembalianIndex({ sewaAktif }) {
     const [searchTerm, setSearchTerm] = useState("");
 
+    // Fungsi format Rupiah yang AMAN
+    const formatRupiah = (nilai) => {
+        if (nilai === null || nilai === undefined) return "0";
+        let angka = typeof nilai === "number" ? nilai : parseFloat(nilai);
+        if (isNaN(angka)) angka = 0;
+        // Pastikan tidak negatif
+        angka = Math.max(0, angka);
+        return angka.toLocaleString("id-ID");
+    };
+
     const filteredSewa = sewaAktif.filter(
         (item) =>
             item.kode_transaksi
@@ -125,7 +135,7 @@ export default function PengembalianIndex({ sewaAktif }) {
                                             </p>
                                             <p className="text-sm font-medium">
                                                 Rp{" "}
-                                                {sewa.total_harga.toLocaleString()}
+                                                {formatRupiah(sewa.total_harga)}
                                             </p>
                                         </div>
                                         <div>
@@ -133,8 +143,14 @@ export default function PengembalianIndex({ sewaAktif }) {
                                                 Denda
                                             </p>
                                             <p className="text-sm font-bold text-red-600">
-                                                Rp {sewa.denda.toLocaleString()}
+                                                Rp {formatRupiah(sewa.denda)}
                                             </p>
+                                            {sewa.hari_terlambat > 0 && (
+                                                <p className="text-xs text-red-500">
+                                                    ({sewa.hari_terlambat} hari
+                                                    × Rp 50.000)
+                                                </p>
+                                            )}
                                         </div>
                                     </div>
 
@@ -149,13 +165,13 @@ export default function PengembalianIndex({ sewaAktif }) {
                                                         "sudah",
                                                 ).length
                                             }
-                                            /{sewa.jumlah_barang} kembali
+                                            /{sewa.total_barang} kembali
                                         </p>
                                         <div className="w-full bg-gray-200 rounded-full h-2">
                                             <div
                                                 className="bg-[#C5A059] h-2 rounded-full"
                                                 style={{
-                                                    width: `${(sewa.barang.filter((b) => b.status_kembali === "sudah").length / sewa.jumlah_barang) * 100}%`,
+                                                    width: `${sewa.progress}%`,
                                                 }}
                                             ></div>
                                         </div>

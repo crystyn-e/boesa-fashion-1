@@ -15,6 +15,8 @@ use App\Http\Controllers\Pelayan\PengembalianController as PelayanPengembalianCo
 use App\Http\Controllers\Pelayan\PelangganController as PelayanPelangganController;
 use App\Http\Controllers\Pelayan\BarangController as PelayanBarangController;
 use Inertia\Inertia;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\Admin\AdminContactController; // ← TAMBAHKAN INI
 
 // =========== HALAMAN PUBLIC (SEMUA ORANG BISA LIHAT) ===========
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -50,6 +52,13 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/laporan', [AdminLaporanController::class, 'index'])->name('laporan.index');
     Route::get('/laporan/transaksi', [AdminLaporanController::class, 'transaksi'])->name('laporan.transaksi');
     Route::get('/laporan/barang', [AdminLaporanController::class, 'barang'])->name('laporan.barang');
+
+    // ========== MANAJEMEN PESAN KONTAK (MENGGUNAKAN AdminContactController) ==========
+    Route::get('/contacts/unread-count', [AdminContactController::class, 'unreadCount'])->name('contacts.unread');
+    Route::get('/contacts', [AdminContactController::class, 'index'])->name('contacts.index');
+    Route::get('/contacts/{id}', [AdminContactController::class, 'show'])->name('contacts.show');
+    Route::delete('/contacts/{id}', [AdminContactController::class, 'destroy'])->name('contacts.destroy');
+    Route::post('/contacts/{id}/read', [AdminContactController::class, 'markAsRead'])->name('contacts.read');
 });
 
 // =========== ROUTES PELAYAN/STAF (HANYA STAF) ===========
@@ -63,7 +72,6 @@ Route::middleware(['auth', 'role:staf'])->prefix('pelayan')->name('pelayan.')->g
     Route::get('/transaksi/{id}', [PelayanTransaksiController::class, 'show'])->name('transaksi.show');
     Route::put('/transaksi/{id}/ambil', [PelayanTransaksiController::class, 'ambilBarang'])->name('transaksi.ambil');
     Route::delete('/transaksi/{id}/batal', [PelayanTransaksiController::class, 'batal'])->name('transaksi.batal');
-    // ROUTE BAYAR DIHAPUS
 
     // Pengembalian
     Route::get('/pengembalian', [PelayanPengembalianController::class, 'index'])->name('pengembalian');
@@ -82,8 +90,12 @@ Route::middleware(['auth', 'role:staf'])->prefix('pelayan')->name('pelayan.')->g
     Route::get('/barang/{id}', [PelayanBarangController::class, 'show'])->name('barang.show');
 });
 
-// Laporan
+// Laporan (perbaiki duplikasi)
 Route::get('/laporan', [AdminLaporanController::class, 'index'])->name('laporan.index');
 Route::get('/laporan/transaksi', [AdminLaporanController::class, 'transaksi'])->name('laporan.transaksi');
 Route::get('/laporan/barang', [AdminLaporanController::class, 'barang'])->name('laporan.barang');
-Route::get('/laporan/keuangan', [AdminLaporanController::class, 'transaksi'])->name('laporan.keuangan');
+Route::get('/laporan/export-transaksi', [AdminLaporanController::class, 'exportTransaksi'])->name('laporan.export-transaksi');
+Route::get('/laporan/export-barang', [AdminLaporanController::class, 'exportBarang'])->name('laporan.export-barang');
+
+// =========== ROUTE KONTAK (KIRIM PESAN DARI HALAMAN KONTAK) ===========
+Route::post('/contact/send', [ContactController::class, 'send'])->name('contact.send');

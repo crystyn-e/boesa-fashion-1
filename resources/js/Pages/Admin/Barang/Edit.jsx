@@ -37,20 +37,24 @@ export default function BarangEdit({ barang, kategoris }) {
     return (
         <AdminLayout title="Edit Barang">
             <div className="py-6">
-                {/* Back Button */}
+                {/* Back Button - Warna emas */}
                 <Link
                     href="/admin/barang"
-                    className="inline-flex items-center text-sm text-gray-600 hover:text-[#C5A059] mb-6"
+                    className="inline-flex items-center text-sm text-gray-600 hover:text-[#C5A059] transition-colors mb-6"
                 >
                     <ArrowLeftIcon className="w-4 h-4 mr-1" />
                     Kembali ke Daftar Barang
                 </Link>
 
-                {/* Form Card */}
-                <div className="bg-white shadow-lg rounded-xl border border-gray-200 p-6 max-w-3xl">
-                    <h2 className="text-xl font-bold text-gray-900 mb-6">
-                        Edit Barang: {barang.nama_barang}
-                    </h2>
+                {/* Form Card - Putih solid */}
+                <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 max-w-3xl">
+                    {/* Header dengan garis emas */}
+                    <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-xl font-semibold text-gray-800">
+                            Edit Barang: {barang.nama_barang}
+                        </h2>
+                        <div className="w-16 h-0.5 bg-[#C5A059] rounded-full"></div>
+                    </div>
 
                     <form
                         onSubmit={submit}
@@ -71,7 +75,7 @@ export default function BarangEdit({ barang, kategoris }) {
                                     onChange={(e) =>
                                         setData("kode_barang", e.target.value)
                                     }
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent"
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] transition-all duration-300"
                                     placeholder="Contoh: JAS-001"
                                 />
                                 {errors.kode_barang && (
@@ -93,7 +97,7 @@ export default function BarangEdit({ barang, kategoris }) {
                                     onChange={(e) =>
                                         setData("nama_barang", e.target.value)
                                     }
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent"
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] transition-all duration-300"
                                     placeholder="Contoh: Jas Tuxedo Black Premium"
                                 />
                                 {errors.nama_barang && (
@@ -114,7 +118,7 @@ export default function BarangEdit({ barang, kategoris }) {
                                     onChange={(e) =>
                                         setData("kategori_id", e.target.value)
                                     }
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent"
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] transition-all duration-300"
                                 >
                                     <option value="">Pilih Kategori</option>
                                     {kategoris.map((kategori) => (
@@ -144,7 +148,7 @@ export default function BarangEdit({ barang, kategoris }) {
                                     onChange={(e) =>
                                         setData("ukuran", e.target.value)
                                     }
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent"
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] transition-all duration-300"
                                     placeholder="Contoh: S, M, L, XL atau 39,40,41"
                                 />
                                 {errors.ukuran && (
@@ -165,7 +169,7 @@ export default function BarangEdit({ barang, kategoris }) {
                                     onChange={(e) =>
                                         setData("warna", e.target.value)
                                     }
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent"
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] transition-all duration-300"
                                     placeholder="Contoh: Hitam, Navy, Maroon"
                                 />
                                 {errors.warna && (
@@ -187,7 +191,7 @@ export default function BarangEdit({ barang, kategoris }) {
                                     onChange={(e) =>
                                         setData("harga_sewa", e.target.value)
                                     }
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent"
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] transition-all duration-300"
                                     placeholder="250000"
                                 />
                                 {errors.harga_sewa && (
@@ -208,7 +212,7 @@ export default function BarangEdit({ barang, kategoris }) {
                                     onChange={(e) =>
                                         setData("stok", e.target.value)
                                     }
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent"
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] transition-all duration-300"
                                     min="1"
                                 />
                                 {errors.stok && (
@@ -228,7 +232,7 @@ export default function BarangEdit({ barang, kategoris }) {
                                     onChange={(e) =>
                                         setData("status", e.target.value)
                                     }
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent"
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] transition-all duration-300"
                                 >
                                     <option value="tersedia">Tersedia</option>
                                     <option value="disewa">Disewa</option>
@@ -248,14 +252,14 @@ export default function BarangEdit({ barang, kategoris }) {
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                     Gambar Barang
                                 </label>
-                                <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-[#C5A059] transition-colors">
+                                <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-xl transition-colors border-gray-200 hover:border-[#C5A059]">
                                     <div className="space-y-1 text-center">
                                         {previewImage ? (
                                             <div className="mb-4">
                                                 <img
                                                     src={previewImage}
                                                     alt="Preview"
-                                                    className="mx-auto h-32 w-32 object-cover rounded-lg"
+                                                    className="mx-auto h-32 w-32 object-cover rounded-xl shadow-md"
                                                 />
                                             </div>
                                         ) : (
@@ -264,7 +268,7 @@ export default function BarangEdit({ barang, kategoris }) {
                                         <div className="flex text-sm text-gray-600">
                                             <label
                                                 htmlFor="gambar-upload"
-                                                className="relative cursor-pointer bg-white rounded-md font-medium text-[#C5A059] hover:text-[#D4AF37] focus-within:outline-none"
+                                                className="relative cursor-pointer bg-white rounded-md font-medium text-[#C5A059] hover:text-[#D4AF37] focus-within:outline-none transition-colors"
                                             >
                                                 <span>Upload file baru</span>
                                                 <input
@@ -302,7 +306,7 @@ export default function BarangEdit({ barang, kategoris }) {
                                         setData("deskripsi", e.target.value)
                                     }
                                     rows="4"
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent"
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] transition-all duration-300"
                                     placeholder="Deskripsi lengkap tentang barang..."
                                 />
                                 {errors.deskripsi && (
@@ -317,14 +321,14 @@ export default function BarangEdit({ barang, kategoris }) {
                         <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
                             <Link
                                 href="/admin/barang"
-                                className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                                className="px-6 py-2 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors"
                             >
                                 Batal
                             </Link>
                             <button
                                 type="submit"
                                 disabled={processing}
-                                className="px-6 py-2 bg-gradient-to-r from-[#C5A059] to-[#D4AF37] text-[#0A192F] rounded-lg font-medium hover:shadow-lg transition-all duration-300 disabled:opacity-50"
+                                className="px-6 py-2 bg-[#0A192F] text-white rounded-xl font-medium hover:bg-[#1E2F4A] transition-all duration-300 disabled:opacity-50"
                             >
                                 {processing ? "Menyimpan..." : "Update Barang"}
                             </button>

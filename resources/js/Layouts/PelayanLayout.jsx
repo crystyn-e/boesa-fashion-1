@@ -11,6 +11,9 @@ import {
     XMarkIcon,
 } from "@heroicons/react/24/outline";
 
+
+const logoSrc = "/images/logo-boesafashion.jpg";
+
 export default function PelayanLayout({ children, title }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -35,22 +38,26 @@ export default function PelayanLayout({ children, title }) {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Sidebar untuk desktop */}
+        <div className="min-h-screen bg-white">
+            {/* Sidebar Desktop */}
             <div className="hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
-                <div className="flex flex-col flex-1 min-h-0 bg-[#0A192F]">
-                    <div className="flex items-center h-16 px-4 bg-[#0A192F] border-b border-[#C5A059]/20">
+                <div className="flex flex-col flex-1 min-h-0 bg-[#0A192F] shadow-xl">
+                    {/* Logo Area dengan Gambar */}
+                    <div className="flex items-center h-16 px-4 border-b border-[#C5A059]/20">
                         <div className="flex items-center space-x-2">
-                            <div className="w-8 h-8 bg-gradient-to-r from-[#C5A059] to-[#D4AF37] rounded-lg flex items-center justify-center">
-                                <span className="text-[#0A192F] font-bold">
-                                    BF
-                                </span>
-                            </div>
-                            <span className="text-white font-bold text-lg">
-                                BOESA STAF
+                            <img
+                                src={logoSrc}
+                                alt="BOESA FASHION"
+                                className="w-8 h-8 rounded-lg object-cover"
+                            />
+                            <span className="text-white font-bold text-lg tracking-wide">
+                                BOESA{" "}
+                                <span className="text-[#C5A059]">STAF</span>
                             </span>
                         </div>
                     </div>
+
+                    {/* Navigation */}
                     <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
                         <nav className="flex-1 px-2 space-y-1">
                             {navigation.map((item) => {
@@ -59,22 +66,30 @@ export default function PelayanLayout({ children, title }) {
                                     <Link
                                         key={item.name}
                                         href={item.href}
-                                        className="group flex items-center px-4 py-3 text-sm font-medium rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300"
+                                        className="group flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-300 text-white/70 hover:text-white hover:bg-white/10"
                                     >
-                                        <Icon className="mr-3 h-5 w-5 text-[#C5A059]" />
+                                        <Icon
+                                            className="mr-3 h-5 w-5"
+                                            style={{ color: "#C5A059" }}
+                                        />
                                         {item.name}
                                     </Link>
                                 );
                             })}
                         </nav>
+
+                        {/* Logout */}
                         <div className="px-2 mt-auto pt-4 border-t border-[#C5A059]/20">
                             <Link
                                 href="/logout"
                                 method="post"
                                 as="button"
-                                className="group flex items-center w-full px-4 py-3 text-sm font-medium rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300"
+                                className="group flex items-center w-full px-4 py-3 text-sm font-medium rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300"
                             >
-                                <ArrowLeftOnRectangleIcon className="mr-3 h-5 w-5 text-[#C5A059]" />
+                                <ArrowLeftOnRectangleIcon
+                                    className="mr-3 h-5 w-5"
+                                    style={{ color: "#C5A059" }}
+                                />
                                 Logout
                             </Link>
                         </div>
@@ -82,20 +97,22 @@ export default function PelayanLayout({ children, title }) {
                 </div>
             </div>
 
-            {/* Mobile header */}
-            <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white shadow-md">
+            {/* Mobile Header */}
+            <div className="md:hidden fixed top-0 left-0 right-0 z-50 shadow-md bg-[#0A192F]">
                 <div className="flex items-center justify-between h-16 px-4">
                     <div className="flex items-center space-x-2">
-                        <div className="w-8 h-8 bg-gradient-to-r from-[#C5A059] to-[#D4AF37] rounded-lg flex items-center justify-center">
-                            <span className="text-[#0A192F] font-bold">BF</span>
-                        </div>
-                        <span className="font-bold text-[#0A192F]">
-                            BOESA STAF
+                        <img
+                            src={logoSrc}
+                            alt="BOESA FASHION"
+                            className="w-8 h-8 rounded-lg object-cover"
+                        />
+                        <span className="font-bold text-white tracking-wide">
+                            BOESA <span className="text-[#C5A059]">STAF</span>
                         </span>
                     </div>
                     <button
                         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                        className="p-2 text-gray-600 hover:text-[#C5A059] rounded-lg hover:bg-gray-100"
+                        className="p-2 text-white/70 rounded-lg hover:bg-white/10 transition-all"
                     >
                         {isSidebarOpen ? (
                             <XMarkIcon className="w-6 h-6" />
@@ -106,9 +123,9 @@ export default function PelayanLayout({ children, title }) {
                 </div>
             </div>
 
-            {/* Mobile sidebar */}
+            {/* Mobile Sidebar */}
             {isSidebarOpen && (
-                <div className="md:hidden fixed inset-0 z-40 bg-[#0A192F] pt-16">
+                <div className="md:hidden fixed inset-0 z-40 pt-16 overflow-y-auto bg-[#0A192F]">
                     <nav className="px-4 py-4 space-y-1">
                         {navigation.map((item) => {
                             const Icon = item.icon;
@@ -116,10 +133,13 @@ export default function PelayanLayout({ children, title }) {
                                 <Link
                                     key={item.name}
                                     href={item.href}
-                                    className="flex items-center px-4 py-3 text-sm font-medium rounded-lg text-white/80 hover:text-white hover:bg-white/10"
+                                    className="flex items-center px-4 py-3 text-sm font-medium rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-all"
                                     onClick={() => setIsSidebarOpen(false)}
                                 >
-                                    <Icon className="mr-3 h-5 w-5 text-[#C5A059]" />
+                                    <Icon
+                                        className="mr-3 h-5 w-5"
+                                        style={{ color: "#C5A059" }}
+                                    />
                                     {item.name}
                                 </Link>
                             );
@@ -129,10 +149,13 @@ export default function PelayanLayout({ children, title }) {
                                 href="/logout"
                                 method="post"
                                 as="button"
-                                className="flex items-center w-full px-4 py-3 text-sm font-medium rounded-lg text-white/80 hover:text-white hover:bg-white/10"
+                                className="flex items-center w-full px-4 py-3 text-sm font-medium rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-all"
                                 onClick={() => setIsSidebarOpen(false)}
                             >
-                                <ArrowLeftOnRectangleIcon className="mr-3 h-5 w-5 text-[#C5A059]" />
+                                <ArrowLeftOnRectangleIcon
+                                    className="mr-3 h-5 w-5"
+                                    style={{ color: "#C5A059" }}
+                                />
                                 Logout
                             </Link>
                         </div>
@@ -140,15 +163,28 @@ export default function PelayanLayout({ children, title }) {
                 </div>
             )}
 
-            {/* Main content */}
+            {/* Main Content Container */}
             <div className="md:pl-64">
-                <div className="py-6">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-                        <h1 className="text-2xl font-semibold text-gray-900">
-                            {title}
-                        </h1>
+                {/* Content Header */}
+                <div className="bg-white border-b border-gray-200">
+                    <div className="py-6 px-4 sm:px-6 md:px-8">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <h1 className="text-3xl font-semibold text-gray-800">
+                                    {title}
+                                </h1>
+                                <div className="w-16 h-0.5 bg-[#C5A059] rounded-full mt-2"></div>
+                            </div>
+                            <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                                <div className="w-1.5 h-1.5 rounded-full bg-[#C5A059]"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+                </div>
+
+                {/* Content Body */}
+                <div className="py-6 px-4 sm:px-6 md:px-8">
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                         {children}
                     </div>
                 </div>

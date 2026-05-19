@@ -71,7 +71,7 @@ class TransaksiController extends Controller
             // 4. HITUNG TANGGAL KEMBALI
             $tanggalKembali = date('Y-m-d', strtotime($request->tanggal_pengambilan . ' +3 days'));
 
-            // 5. BUAT TRANSAKSI - HANYA FIELD YANG ADA DI TABEL
+            // 5. BUAT TRANSAKSI
             $transaksi = Transaksi::create([
                 'kode_transaksi' => 'TRX-' . date('Ymd') . '-' . str_pad(rand(1, 999), 3, '0', STR_PAD_LEFT),
                 'user_id' => Auth::id(),
@@ -85,7 +85,6 @@ class TransaksiController extends Controller
                 'deposit_ktp' => $request->deposit_tipe == 'ktp' ? $request->deposit_ktp : null,
                 'status' => 'proses',
                 'status_deposit' => 'ditahan',
-                // HAPUS semua field pembayaran tambahan
             ]);
 
             // 6. SIMPAN DETAIL TRANSAKSI
@@ -137,6 +136,9 @@ class TransaksiController extends Controller
         $transaksi = Transaksi::with(['pelanggan', 'detailTransaksis.barang.kategori'])
             ->findOrFail($id);
 
+        // Ambil data user/staff yang sedang login
+        $user = Auth::user();
+
         return Inertia::render('Pelayan/Transaksi/Show', [
             'transaksi' => [
                 'id' => $transaksi->id,
@@ -169,6 +171,15 @@ class TransaksiController extends Controller
                         'status_kembali' => $detail->status_kembali,
                     ];
                 }),
+            ],
+            'auth' => [
+                'user' => [
+                    'id' => $user->id,
+                    'nama_lengkap' => $user->nama_lengkap,
+                    'username' => $user->username,
+                    'email' => $user->email,
+                    'role' => $user->role,
+                ]
             ]
         ]);
     }

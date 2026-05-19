@@ -1,21 +1,39 @@
 import PelayanLayout from "@/Layouts/PelayanLayout";
 import { Link, router } from "@inertiajs/react";
+import { useRef } from "react";
 import {
     ArrowLeftIcon,
     PrinterIcon,
-    DocumentArrowDownIcon,
     CheckCircleIcon,
     XCircleIcon,
     ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 
-export default function TransaksiShow({ transaksi }) {
+export default function TransaksiShow({ transaksi, auth }) {
+    const printRef = useRef();
+
     const formatDate = (date) => {
+        if (!date) return "-";
         return new Date(date).toLocaleDateString("id-ID", {
             day: "numeric",
             month: "long",
             year: "numeric",
         });
+    };
+
+    const formatDateTime = (date) => {
+        if (!date) return "-";
+        return new Date(date).toLocaleString("id-ID", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+    };
+
+    const formatRupiah = (angka) => {
+        return new Intl.NumberFormat("id-ID").format(angka || 0);
     };
 
     const getStatusBadge = (status) => {
@@ -61,6 +79,16 @@ export default function TransaksiShow({ transaksi }) {
         }
     };
 
+    const handlePrint = () => {
+        const printContent = printRef.current.innerHTML;
+        const originalContent = document.body.innerHTML;
+
+        document.body.innerHTML = printContent;
+        window.print();
+        document.body.innerHTML = originalContent;
+        window.location.reload();
+    };
+
     return (
         <PelayanLayout title={`Detail Transaksi - ${transaksi.kode_transaksi}`}>
             <div className="py-6">
@@ -81,17 +109,18 @@ export default function TransaksiShow({ transaksi }) {
                                 {transaksi.kode_transaksi}
                             </h2>
                             <p className="text-sm text-gray-500 mt-1">
-                                Dibuat pada {formatDate(transaksi.created_at)}
+                                Dibuat pada{" "}
+                                {formatDateTime(transaksi.created_at)}
                             </p>
                         </div>
                         <div className="flex items-center gap-3">
                             {getStatusBadge(transaksi.status)}
                             <button
-                                onClick={() => window.print()}
+                                onClick={handlePrint}
                                 className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center"
                             >
                                 <PrinterIcon className="w-4 h-4 mr-2" />
-                                Cetak
+                                Cetak Bon
                             </button>
                         </div>
                     </div>
@@ -191,35 +220,26 @@ export default function TransaksiShow({ transaksi }) {
                                     Total Harga
                                 </p>
                                 <p className="font-bold">
-                                    Rp{" "}
-                                    {parseInt(
-                                        transaksi.total_harga,
-                                    ).toLocaleString()}
+                                    Rp {formatRupiah(transaksi.total_harga)}
                                 </p>
                             </div>
                             <div className="flex justify-between text-[#C5A059]">
                                 <p className="text-sm">DP</p>
                                 <p className="font-bold">
-                                    Rp {parseInt(transaksi.dp).toLocaleString()}
+                                    Rp {formatRupiah(transaksi.dp)}
                                 </p>
                             </div>
                             <div className="flex justify-between border-t border-gray-200 pt-2">
                                 <p className="text-sm text-gray-500">Sisa</p>
                                 <p className="font-bold">
-                                    Rp{" "}
-                                    {parseInt(
-                                        transaksi.sisa_pembayaran,
-                                    ).toLocaleString()}
+                                    Rp {formatRupiah(transaksi.sisa_pembayaran)}
                                 </p>
                             </div>
                             {transaksi.denda > 0 && (
                                 <div className="flex justify-between text-red-600">
                                     <p className="text-sm">Denda</p>
                                     <p className="font-bold">
-                                        Rp{" "}
-                                        {parseInt(
-                                            transaksi.denda,
-                                        ).toLocaleString()}
+                                        Rp {formatRupiah(transaksi.denda)}
                                     </p>
                                 </div>
                             )}
@@ -275,9 +295,9 @@ export default function TransaksiShow({ transaksi }) {
                                             </td>
                                             <td className="px-4 py-2 text-sm font-semibold text-[#C5A059]">
                                                 Rp{" "}
-                                                {parseInt(
+                                                {formatRupiah(
                                                     detail.harga_sewa,
-                                                ).toLocaleString()}
+                                                )}
                                             </td>
                                             <td className="px-4 py-2 text-sm">
                                                 {detail.status_kembali ===
@@ -301,7 +321,7 @@ export default function TransaksiShow({ transaksi }) {
                     </div>
                 </div>
 
-                {/* Tombol Aksi Berdasarkan Status */}
+                {/* Tombol Aksi */}
                 <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-end">
                     {transaksi.status === "proses" && (
                         <>
@@ -346,6 +366,383 @@ export default function TransaksiShow({ transaksi }) {
                             Transaksi Dibatalkan
                         </div>
                     )}
+                </div>
+
+                {/* ========== BON SEWA BOESA FASHION (Untuk Print) ========== */}
+                <div ref={printRef} className="hidden">
+                    <div
+                        className="bon-container"
+                        style={{
+                            width: "80mm",
+                            margin: "0 auto",
+                            padding: "8px",
+                            fontFamily:
+                                "'Courier New', 'Lucida Console', monospace",
+                            fontSize: "11px",
+                            lineHeight: "1.3",
+                            color: "#000",
+                            backgroundColor: "#fff",
+                        }}
+                    >
+                        {/* Header Bon */}
+                        <div
+                            className="text-center"
+                            style={{
+                                borderBottom: "2px dashed #000",
+                                paddingBottom: "8px",
+                                marginBottom: "8px",
+                            }}
+                        >
+                            <h2
+                                style={{
+                                    fontSize: "16px",
+                                    fontWeight: "bold",
+                                    margin: "0 0 4px 0",
+                                }}
+                            >
+                                BOESA FASHION
+                            </h2>
+                            <p style={{ fontSize: "9px", margin: "2px 0" }}>
+                                Jl. Jend. D.I Panjaitan No.39, Babura
+                            </p>
+                            <p style={{ fontSize: "9px", margin: "2px 0" }}>
+                                Kec. Medan Baru, Kota Medan
+                            </p>
+                            <p style={{ fontSize: "9px", margin: "2px 0" }}>
+                                Sumatera Utara 20152
+                            </p>
+                            <p style={{ fontSize: "9px", margin: "2px 0" }}>
+                                Telp: +62 822-7650-4245
+                            </p>
+                            <div
+                                style={{
+                                    borderTop: "1px dashed #000",
+                                    marginTop: "6px",
+                                    paddingTop: "4px",
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        fontSize: "11px",
+                                        fontWeight: "bold",
+                                        margin: "0",
+                                    }}
+                                >
+                                    BUKTI SEWA
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Info Transaksi */}
+                        <div
+                            style={{
+                                marginBottom: "8px",
+                                borderBottom: "1px dotted #000",
+                                paddingBottom: "6px",
+                            }}
+                        >
+                            <div
+                                style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                }}
+                            >
+                                <span>No. Transaksi:</span>
+                                <span style={{ fontWeight: "bold" }}>
+                                    {transaksi.kode_transaksi}
+                                </span>
+                            </div>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                }}
+                            >
+                                <span>Tanggal:</span>
+                                <span>
+                                    {formatDateTime(transaksi.created_at)}
+                                </span>
+                            </div>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                }}
+                            >
+                                <span>Status:</span>
+                                <span
+                                    style={{
+                                        fontWeight: "bold",
+                                        textTransform: "uppercase",
+                                    }}
+                                >
+                                    {transaksi.status}
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Data Pelanggan */}
+                        <div
+                            style={{
+                                marginBottom: "8px",
+                                borderBottom: "1px dotted #000",
+                                paddingBottom: "6px",
+                            }}
+                        >
+                            <p
+                                style={{
+                                    fontWeight: "bold",
+                                    margin: "0 0 4px 0",
+                                }}
+                            >
+                                DATA PELANGGAN
+                            </p>
+                            <div>Nama: {transaksi.pelanggan.nama}</div>
+                            <div>
+                                Telepon: {transaksi.pelanggan.no_telepon || "-"}
+                            </div>
+                            <div>
+                                Alamat: {transaksi.pelanggan.alamat || "-"}
+                            </div>
+                            {transaksi.deposit_tipe === "ktp" && (
+                                <div>No. KTP: {transaksi.deposit_ktp}</div>
+                            )}
+                        </div>
+
+                        {/* Info Sewa */}
+                        <div
+                            style={{
+                                marginBottom: "8px",
+                                borderBottom: "1px dotted #000",
+                                paddingBottom: "6px",
+                            }}
+                        >
+                            <p
+                                style={{
+                                    fontWeight: "bold",
+                                    margin: "0 0 4px 0",
+                                }}
+                            >
+                                INFO SEWA
+                            </p>
+                            <div>
+                                Tgl Ambil: {formatDate(transaksi.tgl_sewa)}
+                            </div>
+                            <div>
+                                Tgl Kembali:{" "}
+                                {formatDate(transaksi.tgl_harus_kembali)}
+                            </div>
+                            <div>
+                                Deposit:{" "}
+                                {transaksi.deposit_tipe === "uang"
+                                    ? "UANG"
+                                    : "KTP"}
+                            </div>
+                        </div>
+
+                        {/* Detail Barang */}
+                        <div
+                            style={{
+                                marginBottom: "8px",
+                                borderBottom: "1px dotted #000",
+                                paddingBottom: "6px",
+                            }}
+                        >
+                            <p
+                                style={{
+                                    fontWeight: "bold",
+                                    margin: "0 0 4px 0",
+                                }}
+                            >
+                                DETAIL BARANG
+                            </p>
+                            <table
+                                style={{
+                                    width: "100%",
+                                    borderCollapse: "collapse",
+                                }}
+                            >
+                                <thead>
+                                    <tr
+                                        style={{
+                                            borderBottom: "1px dotted #000",
+                                        }}
+                                    >
+                                        <th
+                                            style={{
+                                                textAlign: "left",
+                                                padding: "2px 0",
+                                            }}
+                                        >
+                                            Item
+                                        </th>
+                                        <th
+                                            style={{
+                                                textAlign: "right",
+                                                padding: "2px 0",
+                                            }}
+                                        >
+                                            Harga
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {transaksi.detail_transaksis.map(
+                                        (detail, idx) => (
+                                            <tr key={idx}>
+                                                <td
+                                                    style={{ padding: "2px 0" }}
+                                                >
+                                                    {detail.barang.nama_barang}
+                                                </td>
+                                                <td
+                                                    style={{
+                                                        textAlign: "right",
+                                                        padding: "2px 0",
+                                                    }}
+                                                >
+                                                    Rp{" "}
+                                                    {formatRupiah(
+                                                        detail.harga_sewa,
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        ),
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Pembayaran */}
+                        <div
+                            style={{
+                                marginBottom: "8px",
+                                borderBottom: "1px dotted #000",
+                                paddingBottom: "6px",
+                            }}
+                        >
+                            <p
+                                style={{
+                                    fontWeight: "bold",
+                                    margin: "0 0 4px 0",
+                                }}
+                            >
+                                PEMBAYARAN
+                            </p>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                }}
+                            >
+                                <span>Total Sewa:</span>
+                                <span>
+                                    Rp {formatRupiah(transaksi.total_harga)}
+                                </span>
+                            </div>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                }}
+                            >
+                                <span>DP (Uang Muka):</span>
+                                <span>Rp {formatRupiah(transaksi.dp)}</span>
+                            </div>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    borderTop: "1px dotted #000",
+                                    marginTop: "4px",
+                                    paddingTop: "4px",
+                                }}
+                            >
+                                <span style={{ fontWeight: "bold" }}>
+                                    Sisa Pembayaran:
+                                </span>
+                                <span style={{ fontWeight: "bold" }}>
+                                    Rp {formatRupiah(transaksi.sisa_pembayaran)}
+                                </span>
+                            </div>
+                            {transaksi.denda > 0 && (
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        color: "red",
+                                    }}
+                                >
+                                    <span>Denda:</span>
+                                    <span>
+                                        Rp {formatRupiah(transaksi.denda)}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* DILAYANI OLEH */}
+                        <div
+                            style={{
+                                marginBottom: "8px",
+                                borderBottom: "1px dotted #000",
+                                paddingBottom: "6px",
+                            }}
+                        >
+                            <p
+                                style={{
+                                    fontWeight: "bold",
+                                    margin: "0 0 4px 0",
+                                }}
+                            >
+                                DILAYANI OLEH
+                            </p>
+                            <div>Nama: {auth?.user?.nama_lengkap || "-"}</div>
+                            <div>ID Staff: {auth?.user?.username || "-"}</div>
+                        </div>
+
+                        {/* Footer */}
+                        <div
+                            className="text-center"
+                            style={{ marginTop: "8px", paddingTop: "6px" }}
+                        >
+                            <p style={{ fontSize: "9px", margin: "2px 0" }}>
+                                Terima kasih atas kepercayaan Anda
+                            </p>
+                            <p style={{ fontSize: "9px", margin: "2px 0" }}>
+                                Barang yang sudah disewa tidak dapat
+                                dikembalikan
+                            </p>
+                            <p style={{ fontSize: "9px", margin: "2px 0" }}>
+                                dan DP tidak dapat ditarik kembali.
+                            </p>
+                            <div
+                                style={{
+                                    borderTop: "2px dashed #000",
+                                    marginTop: "8px",
+                                    paddingTop: "6px",
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        fontSize: "10px",
+                                        fontWeight: "bold",
+                                        margin: "0",
+                                    }}
+                                >
+                                    STUDIO BOESA FASHION
+                                </p>
+                                <p
+                                    style={{
+                                        fontSize: "9px",
+                                        margin: "2px 0 0 0",
+                                    }}
+                                >
+                                    Fashion Sewa Premium
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </PelayanLayout>

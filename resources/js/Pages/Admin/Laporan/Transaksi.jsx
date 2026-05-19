@@ -21,7 +21,7 @@ export default function LaporanTransaksi({ transaksis = [], filters = {} }) {
 
     const exportExcel = () => {
         window.open(
-            `/admin/laporan/export-transaksi?start_date=${startDate}&end_date=${endDate}&status=${status}`,
+            `/laporan/export-transaksi?start_date=${startDate}&end_date=${endDate}&status=${status}`,
             "_blank",
         );
     };
@@ -33,13 +33,40 @@ export default function LaporanTransaksi({ transaksis = [], filters = {} }) {
         router.get("/admin/laporan/transaksi", {}, { preserveState: true });
     };
 
-    let filtered = [...transaksis];
-    if (startDate) filtered = filtered.filter((t) => t.tgl_sewa >= startDate);
-    if (endDate) filtered = filtered.filter((t) => t.tgl_sewa <= endDate);
-    if (status) filtered = filtered.filter((t) => t.status === status);
+    // Filter data manual
+    let filtered = [];
+    for (let i = 0; i < transaksis.length; i++) {
+        let t = transaksis[i];
+        let match = true;
 
-    const total = filtered.reduce((sum, t) => sum + (t.total_harga || 0), 0);
-    const totalDenda = filtered.reduce((sum, t) => sum + (t.denda || 0), 0);
+        if (startDate && t.tgl_sewa < startDate) match = false;
+        if (endDate && t.tgl_sewa > endDate) match = false;
+        if (status && t.status !== status) match = false;
+
+        if (match) filtered.push(t);
+    }
+
+    // Fungsi format Rupiah
+    const formatRupiah = (nilai) => {
+        if (nilai === null || nilai === undefined) return "0";
+        let angka = typeof nilai === "number" ? nilai : parseFloat(nilai);
+        if (isNaN(angka)) angka = 0;
+        return angka.toLocaleString("id-ID");
+    };
+
+    // Hitung total
+    let total = 0;
+    let totalDenda = 0;
+    for (let i = 0; i < filtered.length; i++) {
+        let harga = filtered[i].total_harga;
+        let denda = filtered[i].denda;
+        total =
+            total +
+            (typeof harga === "number" ? harga : parseFloat(harga) || 0);
+        totalDenda =
+            totalDenda +
+            (typeof denda === "number" ? denda : parseFloat(denda) || 0);
+    }
 
     return (
         <AdminLayout title="Laporan Transaksi">
@@ -53,40 +80,40 @@ export default function LaporanTransaksi({ transaksis = [], filters = {} }) {
 
                 <div className="flex justify-between items-center mb-6">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-800">
+                        <h1 className="text-2xl font-semibold text-gray-800">
                             Laporan Transaksi
                         </h1>
-                        <p className="text-gray-500">
+                        <p className="text-gray-500 text-sm">
                             Filter dan export data transaksi
                         </p>
                     </div>
                     <button
                         onClick={exportExcel}
-                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2"
+                        className="bg-[#0A192F] text-white px-4 py-2 rounded-lg hover:bg-[#1E2F4A] transition-all duration-300 flex items-center gap-2 shadow-sm"
                     >
                         📥 Export Excel
                     </button>
                 </div>
 
                 {/* Filter */}
-                <div className="bg-white rounded-xl shadow p-5 mb-6">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5 mb-6">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <input
                             type="date"
                             value={startDate}
                             onChange={(e) => setStartDate(e.target.value)}
-                            className="border rounded-lg px-3 py-2"
+                            className="border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] transition-all duration-300"
                         />
                         <input
                             type="date"
                             value={endDate}
                             onChange={(e) => setEndDate(e.target.value)}
-                            className="border rounded-lg px-3 py-2"
+                            className="border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] transition-all duration-300"
                         />
                         <select
                             value={status}
                             onChange={(e) => setStatus(e.target.value)}
-                            className="border rounded-lg px-3 py-2"
+                            className="border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] transition-all duration-300"
                         >
                             <option value="">Semua Status</option>
                             <option value="proses">Proses</option>
@@ -97,13 +124,13 @@ export default function LaporanTransaksi({ transaksis = [], filters = {} }) {
                         <div className="flex gap-2">
                             <button
                                 onClick={applyFilters}
-                                className="bg-[#C5A059] text-[#0A192F] px-4 py-2 rounded-lg"
+                                className="bg-[#C5A059] text-[#0A192F] px-4 py-2 rounded-lg hover:bg-[#D4AF37] transition-all duration-300"
                             >
                                 Filter
                             </button>
                             <button
                                 onClick={resetFilters}
-                                className="bg-gray-100 px-4 py-2 rounded-lg hover:bg-gray-200"
+                                className="bg-gray-100 px-4 py-2 rounded-lg hover:bg-gray-200 transition-all duration-300"
                             >
                                 Reset
                             </button>
@@ -111,92 +138,96 @@ export default function LaporanTransaksi({ transaksis = [], filters = {} }) {
                     </div>
                 </div>
 
-                {/* Summary */}
+                {/* Summary Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    <div className="bg-white rounded-xl shadow p-5 text-center">
-                        <p className="text-gray-500">Total Transaksi</p>
-                        <p className="text-2xl font-bold">{filtered.length}</p>
-                    </div>
-                    <div className="bg-gradient-to-r from-[#0A192F] to-[#1E2F4A] rounded-xl p-5 text-center text-white">
-                        <p className="text-sm opacity-80">Total Pendapatan</p>
-                        <p className="text-2xl font-bold">
-                            Rp {total.toLocaleString()}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5 text-center">
+                        <p className="text-gray-500 text-sm">Total Transaksi</p>
+                        <p className="text-2xl font-bold text-gray-800">
+                            {filtered.length}
                         </p>
                     </div>
-                    <div className="bg-white rounded-xl shadow p-5 text-center">
-                        <p className="text-gray-500">Total Denda</p>
+                    <div className="bg-[#0A192F] rounded-lg shadow-sm p-5 text-center text-white">
+                        <p className="text-sm opacity-80">Total Pendapatan</p>
+                        <p className="text-2xl font-bold">
+                            Rp {formatRupiah(total)}
+                        </p>
+                    </div>
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5 text-center">
+                        <p className="text-gray-500 text-sm">Total Denda</p>
                         <p className="text-2xl font-bold text-red-600">
-                            Rp {totalDenda.toLocaleString()}
+                            Rp {formatRupiah(totalDenda)}
                         </p>
                     </div>
                 </div>
 
                 {/* Table */}
-                <div className="bg-white rounded-xl shadow overflow-hidden">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full">
-                            <thead className="bg-gradient-to-r from-[#0A192F] to-[#1E2F4A] text-white">
+                            <thead className="bg-[#0A192F] text-white">
                                 <tr>
-                                    <th className="px-4 py-3 text-left">No</th>
-                                    <th className="px-4 py-3 text-left">
+                                    <th className="px-4 py-3 text-left text-sm font-semibold">
+                                        No
+                                    </th>
+                                    <th className="px-4 py-3 text-left text-sm font-semibold">
                                         Kode
                                     </th>
-                                    <th className="px-4 py-3 text-left">
+                                    <th className="px-4 py-3 text-left text-sm font-semibold">
                                         Pelanggan
                                     </th>
-                                    <th className="px-4 py-3 text-left">
+                                    <th className="px-4 py-3 text-left text-sm font-semibold">
                                         Tgl Sewa
                                     </th>
-                                    <th className="px-4 py-3 text-left">
+                                    <th className="px-4 py-3 text-left text-sm font-semibold">
                                         Tgl Kembali
                                     </th>
-                                    <th className="px-4 py-3 text-left">
+                                    <th className="px-4 py-3 text-left text-sm font-semibold">
                                         Total
                                     </th>
-                                    <th className="px-4 py-3 text-left">DP</th>
-                                    <th className="px-4 py-3 text-left">
+                                    <th className="px-4 py-3 text-left text-sm font-semibold">
+                                        DP
+                                    </th>
+                                    <th className="px-4 py-3 text-left text-sm font-semibold">
                                         Denda
                                     </th>
-                                    <th className="px-4 py-3 text-left">
+                                    <th className="px-4 py-3 text-left text-sm font-semibold">
                                         Status
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody className="divide-y divide-gray-200">
                                 {filtered.map((t, i) => (
                                     <tr
                                         key={t.id}
-                                        className="border-b hover:bg-gray-50"
+                                        className="hover:bg-gray-50 transition-colors"
                                     >
-                                        <td className="px-4 py-3">{i + 1}</td>
-                                        <td className="px-4 py-3 text-[#C5A059] font-mono">
+                                        <td className="px-4 py-3 text-sm text-gray-500">
+                                            {i + 1}
+                                        </td>
+                                        <td className="px-4 py-3 text-sm text-[#C5A059] font-mono">
                                             {t.kode_transaksi}
                                         </td>
-                                        <td className="px-4 py-3">
+                                        <td className="px-4 py-3 text-sm text-gray-700">
                                             {t.pelanggan}
                                         </td>
-                                        <td className="px-4 py-3">
+                                        <td className="px-4 py-3 text-sm text-gray-600">
                                             {t.tgl_sewa}
                                         </td>
-                                        <td className="px-4 py-3">
+                                        <td className="px-4 py-3 text-sm text-gray-600">
                                             {t.tgl_kembali || "-"}
                                         </td>
-                                        <td className="px-4 py-3">
-                                            Rp{" "}
-                                            {parseInt(
-                                                t.total_harga,
-                                            ).toLocaleString()}
+                                        <td className="px-4 py-3 text-sm">
+                                            Rp {formatRupiah(t.total_harga)}
                                         </td>
-                                        <td className="px-4 py-3">
-                                            Rp {parseInt(t.dp).toLocaleString()}
+                                        <td className="px-4 py-3 text-sm">
+                                            Rp {formatRupiah(t.dp)}
                                         </td>
-                                        <td className="px-4 py-3 text-red-600">
-                                            Rp{" "}
-                                            {parseInt(t.denda).toLocaleString()}
+                                        <td className="px-4 py-3 text-sm text-red-600">
+                                            Rp {formatRupiah(t.denda)}
                                         </td>
-                                        <td className="px-4 py-3">
+                                        <td className="px-4 py-3 text-sm">
                                             <span
-                                                className={`px-2 py-1 rounded-full text-xs ${
+                                                className={`px-2 py-1 rounded-full text-xs font-medium ${
                                                     t.status === "selesai"
                                                         ? "bg-green-100 text-green-700"
                                                         : t.status === "sewa"
@@ -207,7 +238,13 @@ export default function LaporanTransaksi({ transaksis = [], filters = {} }) {
                                                             : "bg-red-100 text-red-700"
                                                 }`}
                                             >
-                                                {t.status}
+                                                {t.status === "selesai"
+                                                    ? "Selesai"
+                                                    : t.status === "sewa"
+                                                      ? "Disewa"
+                                                      : t.status === "proses"
+                                                        ? "Proses"
+                                                        : "Batal"}
                                             </span>
                                         </td>
                                     </tr>
@@ -215,6 +252,12 @@ export default function LaporanTransaksi({ transaksis = [], filters = {} }) {
                             </tbody>
                         </table>
                     </div>
+
+                    {filtered.length === 0 && (
+                        <div className="text-center py-10 text-gray-500">
+                            Tidak ada data transaksi
+                        </div>
+                    )}
                 </div>
             </div>
         </AdminLayout>

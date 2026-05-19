@@ -44,25 +44,25 @@ export default function BarangIndex({ barangs, kategoris }) {
         switch (status) {
             case "tersedia":
                 return (
-                    <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium border border-green-200">
+                    <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
                         Tersedia
                     </span>
                 );
             case "disewa":
                 return (
-                    <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium border border-blue-200">
+                    <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
                         Disewa
                     </span>
                 );
             case "maintenance":
                 return (
-                    <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium border border-yellow-200">
+                    <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">
                         Maintenance
                     </span>
                 );
             default:
                 return (
-                    <span className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-medium border border-gray-200">
+                    <span className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-medium">
                         {status}
                     </span>
                 );
@@ -75,17 +75,17 @@ export default function BarangIndex({ barangs, kategoris }) {
                 {/* Header dengan Tombol Tambah */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900">
+                        <h1 className="text-2xl font-semibold text-gray-800">
                             Manajemen Barang
                         </h1>
-                        <p className="text-sm text-gray-600 mt-1">
+                        <p className="text-sm text-gray-500 mt-1">
                             Kelola semua koleksi jas, gaun, sepatu, aksesoris,
                             dan kostum Boesa Fashion
                         </p>
                     </div>
                     <Link
                         href="/admin/barang/create"
-                        className="mt-4 sm:mt-0 inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-[#C5A059] to-[#D4AF37] text-[#0A192F] rounded-lg font-medium hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+                        className="mt-4 sm:mt-0 inline-flex items-center px-5 py-2.5 bg-[#0A192F] text-white rounded-lg font-medium hover:bg-[#1E2F4A] transition-all duration-300 shadow-sm"
                     >
                         <PlusIcon className="w-5 h-5 mr-2" />
                         Tambah Barang Baru
@@ -93,7 +93,7 @@ export default function BarangIndex({ barangs, kategoris }) {
                 </div>
 
                 {/* Filter Section */}
-                <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200 mb-6">
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
                     <div className="flex items-center mb-3">
                         <FunnelIcon className="w-5 h-5 text-[#C5A059] mr-2" />
                         <h3 className="font-medium text-gray-700">
@@ -109,7 +109,7 @@ export default function BarangIndex({ barangs, kategoris }) {
                                 placeholder="Cari nama atau kode barang..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent"
+                                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] transition-all duration-300"
                             />
                         </div>
 
@@ -119,7 +119,7 @@ export default function BarangIndex({ barangs, kategoris }) {
                             onChange={(e) =>
                                 setSelectedKategori(e.target.value)
                             }
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent"
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] transition-all duration-300"
                         >
                             <option value="">Semua Kategori</option>
                             {kategoris.map((kategori) => (
@@ -133,7 +133,7 @@ export default function BarangIndex({ barangs, kategoris }) {
                         <select
                             value={selectedStatus}
                             onChange={(e) => setSelectedStatus(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent"
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] transition-all duration-300"
                         >
                             <option value="">Semua Status</option>
                             <option value="tersedia">Tersedia</option>
@@ -151,12 +151,12 @@ export default function BarangIndex({ barangs, kategoris }) {
                                 <p className="text-sm text-gray-500">
                                     Total Barang
                                 </p>
-                                <p className="text-2xl font-bold text-gray-900">
+                                <p className="text-2xl font-bold text-gray-800">
                                     {barangs.total || 0}
                                 </p>
                             </div>
-                            <div className="p-3 bg-purple-50 rounded-lg">
-                                <CubeIcon className="w-6 h-6 text-purple-600" />
+                            <div className="p-3 bg-gray-100 rounded-xl">
+                                <CubeIcon className="w-6 h-6 text-gray-500" />
                             </div>
                         </div>
                     </div>
@@ -174,7 +174,7 @@ export default function BarangIndex({ barangs, kategoris }) {
                                     }
                                 </p>
                             </div>
-                            <div className="p-3 bg-green-50 rounded-lg">
+                            <div className="p-3 bg-green-50 rounded-xl">
                                 <div className="w-6 h-6 bg-green-600 rounded-full"></div>
                             </div>
                         </div>
@@ -191,7 +191,7 @@ export default function BarangIndex({ barangs, kategoris }) {
                                     }
                                 </p>
                             </div>
-                            <div className="p-3 bg-blue-50 rounded-lg">
+                            <div className="p-3 bg-blue-50 rounded-xl">
                                 <div className="w-6 h-6 bg-blue-600 rounded-full"></div>
                             </div>
                         </div>
@@ -210,7 +210,7 @@ export default function BarangIndex({ barangs, kategoris }) {
                                     }
                                 </p>
                             </div>
-                            <div className="p-3 bg-yellow-50 rounded-lg">
+                            <div className="p-3 bg-yellow-50 rounded-xl">
                                 <div className="w-6 h-6 bg-yellow-600 rounded-full"></div>
                             </div>
                         </div>
@@ -218,10 +218,10 @@ export default function BarangIndex({ barangs, kategoris }) {
                 </div>
 
                 {/* Tabel Barang */}
-                <div className="bg-white shadow-xl rounded-xl border border-gray-200 overflow-hidden">
+                <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gradient-to-r from-[#0A192F] to-[#1E2F4A]">
+                            <thead className="bg-[#0A192F]">
                                 <tr>
                                     <th className="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">
                                         No
@@ -278,7 +278,7 @@ export default function BarangIndex({ barangs, kategoris }) {
                                                         className="w-10 h-10 rounded-lg object-cover"
                                                     />
                                                 ) : (
-                                                    <div className="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center">
+                                                    <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
                                                         <CubeIcon className="w-5 h-5 text-gray-400" />
                                                     </div>
                                                 )}
@@ -292,7 +292,7 @@ export default function BarangIndex({ barangs, kategoris }) {
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs">
+                                                <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs">
                                                     {barang.kategori
                                                         ?.nama_kategori || "-"}
                                                 </span>
@@ -366,7 +366,7 @@ export default function BarangIndex({ barangs, kategoris }) {
                                                     !selectedStatus && (
                                                         <Link
                                                             href="/admin/barang/create"
-                                                            className="mt-4 inline-flex items-center px-4 py-2 bg-[#C5A059] text-[#0A192F] rounded-lg font-medium hover:bg-[#D4AF37] transition-colors"
+                                                            className="mt-4 inline-flex items-center px-4 py-2 bg-[#0A192F] text-white rounded-lg font-medium hover:bg-[#1E2F4A] transition-all duration-300"
                                                         >
                                                             <PlusIcon className="w-4 h-4 mr-2" />
                                                             Tambah Barang
@@ -396,7 +396,7 @@ export default function BarangIndex({ barangs, kategoris }) {
                                             href={link.url || "#"}
                                             className={`px-3 py-1 rounded-md text-sm ${
                                                 link.active
-                                                    ? "bg-[#C5A059] text-[#0A192F] font-semibold"
+                                                    ? "bg-[#0A192F] text-white font-semibold"
                                                     : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-300"
                                             }`}
                                             dangerouslySetInnerHTML={{

@@ -20,119 +20,140 @@ export default function Login({ status, canResetPassword }) {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#0A192F] to-[#1E2F4A] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8 bg-white/10 backdrop-blur-xl p-8 rounded-2xl shadow-2xl border border-[#C5A059]/20">
-                <div>
-                    <div className="flex justify-center">
-                        <div className="w-20 h-20 bg-gradient-to-r from-[#C5A059] to-[#D4AF37] rounded-2xl flex items-center justify-center shadow-xl">
-                            <span className="text-[#0A192F] font-black text-3xl">
-                                BF
-                            </span>
+        <div className="min-h-screen bg-white flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-md w-full">
+                {/* Main Card */}
+                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    {/* Logo Section */}
+                    <div className="px-8 pt-8 pb-6 text-center">
+                        <div className="flex justify-center mb-4">
+                            <div className="w-20 h-20 bg-[#0A192F] rounded-2xl flex items-center justify-center shadow-md">
+                                <span className="text-[#C5A059] font-black text-3xl">
+                                    BF
+                                </span>
+                            </div>
                         </div>
-                    </div>
-                    <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
-                        BOESA FASHION
-                    </h2>
-                    <p className="mt-2 text-center text-sm text-gray-300">
-                        Silakan login untuk mengakses dashboard
-                    </p>
-                </div>
-
-                {status && (
-                    <div className="bg-green-500/20 border border-green-500 text-green-300 px-4 py-3 rounded-lg">
-                        {status}
-                    </div>
-                )}
-
-                <form className="mt-8 space-y-6" onSubmit={submit}>
-                    <div className="space-y-4">
-                        <div>
-                            <label htmlFor="username" className="sr-only">
-                                Username
-                            </label>
-                            <input
-                                id="username"
-                                type="text"
-                                name="username"
-                                value={data.username}
-                                className="appearance-none relative block w-full px-4 py-3 border border-gray-300/20 bg-white/10 placeholder-gray-400 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent"
-                                placeholder="Username"
-                                autoComplete="username"
-                                onChange={(e) =>
-                                    setData("username", e.target.value)
-                                }
-                            />
-                            {errors.username && (
-                                <p className="mt-1 text-sm text-red-400">
-                                    {errors.username}
-                                </p>
-                            )}
-                        </div>
-
-                        <div>
-                            <label htmlFor="password" className="sr-only">
-                                Password
-                            </label>
-                            <input
-                                id="password"
-                                type="password"
-                                name="password"
-                                value={data.password}
-                                className="appearance-none relative block w-full px-4 py-3 border border-gray-300/20 bg-white/10 placeholder-gray-400 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent"
-                                placeholder="Password"
-                                autoComplete="current-password"
-                                onChange={(e) =>
-                                    setData("password", e.target.value)
-                                }
-                            />
-                            {errors.password && (
-                                <p className="mt-1 text-sm text-red-400">
-                                    {errors.password}
-                                </p>
-                            )}
-                        </div>
+                        <h2 className="text-2xl font-light text-gray-800">
+                            BOESA FASHION
+                        </h2>
+                        <p className="mt-2 text-sm text-gray-400">
+                            Silakan login untuk mengakses dashboard
+                        </p>
                     </div>
 
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                            <input
-                                id="remember"
-                                name="remember"
-                                type="checkbox"
-                                className="h-4 w-4 text-[#C5A059] focus:ring-[#C5A059] border-gray-300 rounded"
-                                checked={data.remember}
-                                onChange={(e) =>
-                                    setData("remember", e.target.checked)
-                                }
-                            />
-                            <label
-                                htmlFor="remember"
-                                className="ml-2 block text-sm text-gray-300"
-                            >
-                                Ingat saya
-                            </label>
+                    {/* Status Message */}
+                    {status && (
+                        <div className="mx-8 mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm">
+                            {status}
                         </div>
-                    </div>
+                    )}
 
-                    <div>
+                    {/* Login Form */}
+                    <form className="px-8 pb-8 space-y-6" onSubmit={submit}>
+                        <div className="space-y-4">
+                            {/* Username Field */}
+                            <div>
+                                <label
+                                    htmlFor="username"
+                                    className="block text-sm font-medium text-gray-700 mb-1"
+                                >
+                                    Username
+                                </label>
+                                <input
+                                    id="username"
+                                    type="text"
+                                    name="username"
+                                    value={data.username}
+                                    className="appearance-none relative block w-full px-4 py-3 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] transition-all duration-300"
+                                    placeholder="Masukkan username"
+                                    autoComplete="username"
+                                    onChange={(e) =>
+                                        setData("username", e.target.value)
+                                    }
+                                />
+                                {errors.username && (
+                                    <p className="mt-1 text-sm text-red-600">
+                                        {errors.username}
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* Password Field */}
+                            <div>
+                                <label
+                                    htmlFor="password"
+                                    className="block text-sm font-medium text-gray-700 mb-1"
+                                >
+                                    Password
+                                </label>
+                                <input
+                                    id="password"
+                                    type="password"
+                                    name="password"
+                                    value={data.password}
+                                    className="appearance-none relative block w-full px-4 py-3 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] transition-all duration-300"
+                                    placeholder="Masukkan password"
+                                    autoComplete="current-password"
+                                    onChange={(e) =>
+                                        setData("password", e.target.value)
+                                    }
+                                />
+                                {errors.password && (
+                                    <p className="mt-1 text-sm text-red-600">
+                                        {errors.password}
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Remember Me */}
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center">
+                                <input
+                                    id="remember"
+                                    name="remember"
+                                    type="checkbox"
+                                    className="h-4 w-4 text-[#C5A059] focus:ring-[#C5A059] border-gray-300 rounded"
+                                    checked={data.remember}
+                                    onChange={(e) =>
+                                        setData("remember", e.target.checked)
+                                    }
+                                />
+                                <label
+                                    htmlFor="remember"
+                                    className="ml-2 block text-sm text-gray-600"
+                                >
+                                    Ingat saya
+                                </label>
+                            </div>
+                        </div>
+
+                        {/* Submit Button */}
                         <button
                             type="submit"
                             disabled={processing}
-                            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-[#0A192F] bg-gradient-to-r from-[#C5A059] to-[#D4AF37] hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#C5A059] transition-all duration-300 transform hover:scale-105 disabled:opacity-50"
+                            className="w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-xl text-white bg-[#0A192F] hover:bg-[#1E2F4A] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#C5A059] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {processing ? "Memproses..." : "MASUK"}
                         </button>
-                    </div>
-                </form>
+                    </form>
 
-                <div className="text-center">
-                    <Link
-                        href="/"
-                        className="text-sm text-gray-300 hover:text-[#C5A059] transition-colors"
-                    >
-                        ← Kembali ke Beranda
-                    </Link>
+                    {/* Back to Home Link */}
+                    <div className="px-8 pb-8 text-center border-t border-gray-100 pt-6">
+                        <Link
+                            href="/"
+                            className="text-sm text-gray-400 hover:text-[#C5A059] transition-colors"
+                        >
+                            ← Kembali ke Beranda
+                        </Link>
+                    </div>
                 </div>
+
+                {/* Footer */}
+                <p className="text-center text-xs text-gray-400 mt-6">
+                    © {new Date().getFullYear()} Boesa Fashion. All rights
+                    reserved.
+                </p>
             </div>
         </div>
     );

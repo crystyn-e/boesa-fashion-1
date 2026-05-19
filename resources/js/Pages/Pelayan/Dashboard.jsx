@@ -88,7 +88,7 @@ export default function Dashboard({ stats }) {
                 {/* Welcome Section */}
                 <div className="mb-8 bg-gradient-to-r from-[#0A192F] to-[#1E2F4A] rounded-2xl p-6 text-white shadow-xl">
                     <h2 className="text-2xl font-bold mb-2">
-                        Selamat Datang, Pelayan! 👋
+                        Selamat Datang, Staf! 👋
                     </h2>
                     <p className="text-gray-300">
                         Layani pelanggan dengan cepat dan ramah. Pantau

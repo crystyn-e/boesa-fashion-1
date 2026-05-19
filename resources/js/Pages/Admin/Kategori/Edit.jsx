@@ -19,24 +19,28 @@ export default function KategoriEdit({ kategori }) {
     return (
         <AdminLayout title="Edit Kategori">
             <div className="py-6">
-                {/* Back Button */}
+                {/* Back Button - Warna emas */}
                 <Link
                     href="/admin/kategori"
-                    className="inline-flex items-center text-sm text-gray-600 hover:text-[#C5A059] mb-6"
+                    className="inline-flex items-center text-sm text-gray-600 hover:text-[#C5A059] transition-colors mb-6"
                 >
                     <ArrowLeftIcon className="w-4 h-4 mr-1" />
                     Kembali ke Daftar Kategori
                 </Link>
 
-                {/* Form Card */}
-                <div className="bg-white shadow-xl rounded-xl border border-gray-200 p-6 max-w-2xl">
-                    <div className="mb-6">
-                        <h2 className="text-2xl font-bold text-gray-900">
-                            Edit Kategori
-                        </h2>
-                        <p className="text-sm text-gray-600 mt-1">
-                            Edit kategori: {kategori.nama_kategori}
-                        </p>
+                {/* Form Card - Putih solid */}
+                <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 max-w-2xl">
+                    {/* Header dengan garis emas */}
+                    <div className="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 className="text-xl font-semibold text-gray-800">
+                                Edit Kategori
+                            </h2>
+                            <p className="text-sm text-gray-500 mt-1">
+                                Edit kategori: {kategori.nama_kategori}
+                            </p>
+                        </div>
+                        <div className="w-16 h-0.5 bg-[#C5A059] rounded-full"></div>
                     </div>
 
                     <form onSubmit={submit} className="space-y-6">
@@ -52,7 +56,7 @@ export default function KategoriEdit({ kategori }) {
                                 onChange={(e) =>
                                     setData("nama_kategori", e.target.value)
                                 }
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent"
+                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] transition-all duration-300"
                             />
                             {errors.nama_kategori && (
                                 <p className="mt-1 text-sm text-red-600">
@@ -72,7 +76,7 @@ export default function KategoriEdit({ kategori }) {
                                 onChange={(e) =>
                                     setData("icon", e.target.value)
                                 }
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent"
+                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] transition-all duration-300"
                                 placeholder="Contoh: fa-solid fa-user-tie"
                             />
                         </div>
@@ -88,7 +92,7 @@ export default function KategoriEdit({ kategori }) {
                                 onChange={(e) =>
                                     setData("urutan", e.target.value)
                                 }
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent"
+                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] transition-all duration-300"
                                 min="0"
                             />
                         </div>
@@ -104,12 +108,39 @@ export default function KategoriEdit({ kategori }) {
                                     setData("deskripsi", e.target.value)
                                 }
                                 rows="4"
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent"
+                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] transition-all duration-300"
                             />
                         </div>
 
+                        {/* Preview Section - Navy solid */}
+                        <div className="bg-[#0A192F] rounded-lg p-4 text-white">
+                            <h3 className="text-sm font-medium mb-2">
+                                Preview Tampilan:
+                            </h3>
+                            <div className="flex items-center space-x-4">
+                                <div className="w-12 h-12 bg-[#C5A059] rounded-lg flex items-center justify-center shadow-md">
+                                    <span className="text-[#0A192F] font-bold text-lg">
+                                        {data.nama_kategori
+                                            ? data.nama_kategori.charAt(0)
+                                            : "?"}
+                                    </span>
+                                </div>
+                                <div>
+                                    <p className="font-medium">
+                                        {data.nama_kategori || "Nama Kategori"}
+                                    </p>
+                                    <p className="text-xs text-[#C5A059]">
+                                        {data.is_active
+                                            ? "Aktif"
+                                            : "Tidak Aktif"}{" "}
+                                        • Urutan: {data.urutan}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
                         {/* Status Aktif */}
-                        <div className="flex items-center bg-gray-50 p-4 rounded-lg">
+                        <div className="flex items-center bg-gray-50 p-4 rounded-lg border border-gray-200">
                             <input
                                 type="checkbox"
                                 checked={data.is_active}
@@ -118,7 +149,7 @@ export default function KategoriEdit({ kategori }) {
                                 }
                                 className="h-4 w-4 text-[#C5A059] focus:ring-[#C5A059] border-gray-300 rounded"
                             />
-                            <label className="ml-2 block text-sm text-gray-900">
+                            <label className="ml-2 block text-sm text-gray-700">
                                 Aktif (kategori akan ditampilkan)
                             </label>
                         </div>
@@ -134,7 +165,7 @@ export default function KategoriEdit({ kategori }) {
                             <button
                                 type="submit"
                                 disabled={processing}
-                                className="px-6 py-2 bg-gradient-to-r from-[#C5A059] to-[#D4AF37] text-[#0A192F] rounded-lg font-medium hover:shadow-lg transition-all duration-300 disabled:opacity-50"
+                                className="px-6 py-2 bg-[#0A192F] text-white rounded-lg font-medium hover:bg-[#1E2F4A] transition-all duration-300 disabled:opacity-50"
                             >
                                 {processing
                                     ? "Menyimpan..."

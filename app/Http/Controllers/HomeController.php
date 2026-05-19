@@ -5,34 +5,65 @@ namespace App\Http\Controllers;
 use App\Models\Barang;
 use App\Models\Kategori;
 use Illuminate\Http\Request;
-use Inertia\Inertia; // <-- TAMBAHKAN INI
+use Inertia\Inertia;
 
 class HomeController extends Controller
 {
     public function index()
     {
+        // Ambil produk terbaru yang tersedia
         $barangTerbaru = Barang::with('kategori')
             ->where('status', 'tersedia')
             ->latest()
             ->take(8)
-            ->get();
+            ->get()
+            ->map(function ($barang) {
+                return [
+                    'id' => $barang->id,
+                    'nama_barang' => $barang->nama_barang,
+                    'slug' => $barang->slug,
+                    'harga_sewa' => $barang->harga_sewa,
+                    'gambar_utama' => $barang->gambar_utama,  // <-- INI YANG BENAR
+                    'status' => $barang->status,
+                    'badge' => $barang->badge ?? null,
+                    'kategori' => $barang->kategori ? [
+                        'id' => $barang->kategori->id,
+                        'nama_kategori' => $barang->kategori->nama_kategori
+                    ] : null,
+                ];
+            });
 
-        $kategoris = Kategori::where('is_active', true)->get();
+        // Ambil kategori yang aktif
+        $kategoris = Kategori::where('is_active', true)
+            ->withCount('barangs')
+            ->get()
+            ->map(function ($kategori) {
+                return [
+                    'id' => $kategori->id,
+                    'nama_kategori' => $kategori->nama_kategori,
+                    'barang_count' => $kategori->barangs_count,
+                ];
+            });
 
-        // UBAH INI: dari view() menjadi Inertia::render()
+        // Debug: cek nilai gambar_utama
+        \Log::info('Barang Terbaru Count: ' . $barangTerbaru->count());
+        if ($barangTerbaru->count() > 0) {
+            \Log::info('Contoh gambar_utama: ' . $barangTerbaru->first()['gambar_utama']);
+        }
+
         return Inertia::render('Home', [
-            'barangTerbaru' => $barangTerbaru,
-            'kategoris' => $kategoris
+            'featuredProducts' => $barangTerbaru,
+            'categories' => $kategoris,
         ]);
     }
 
     public function tentang()
     {
-        return Inertia::render('Tentang'); // Buat Tentang.jsx nanti
+        return Inertia::render('Tentang');
     }
 
     public function kontak()
     {
-        return Inertia::render('Kontak'); // Buat Kontak.jsx nanti
+        return Inertia::render('Kontak');
     }
 }

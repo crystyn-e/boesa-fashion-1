@@ -1,8 +1,17 @@
 import PublicLayout from "@/Layouts/PublicLayout";
 import { Link } from "@inertiajs/react";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, PhoneIcon } from "@heroicons/react/24/outline";
 
 export default function KoleksiShow({ barang, barangTerkait }) {
+    // Buka WhatsApp
+    const openWhatsApp = () => {
+        const message = `Halo Boesa Fashion, saya tertarik dengan ${barang.nama_barang}. Apakah masih tersedia?`;
+        window.open(
+            `https://wa.me/6281234567890?text=${encodeURIComponent(message)}`,
+            "_blank",
+        );
+    };
+
     // Fungsi untuk badge status
     const getStatusBadge = (status) => {
         switch (status) {
@@ -113,23 +122,14 @@ export default function KoleksiShow({ barang, barangTerkait }) {
                                 </p>
                             </div>
 
-                            <div className="flex space-x-4">
-                                <button
-                                    className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
-                                        barang.status === "tersedia"
-                                            ? "bg-[#C5A059] text-[#0A192F] hover:bg-[#D4AF37]"
-                                            : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                    }`}
-                                    disabled={barang.status !== "tersedia"}
-                                >
-                                    {barang.status === "tersedia"
-                                        ? "Sewa Sekarang"
-                                        : "Tidak Tersedia"}
-                                </button>
-                                <button className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
-                                    Hubungi
-                                </button>
-                            </div>
+                            {/* TOMBOL HUBUNGI SAJA, TANPA SEWA SEKARANG */}
+                            <button
+                                onClick={openWhatsApp}
+                                className="w-full px-6 py-3 bg-[#C5A059] text-[#0A192F] rounded-lg font-medium hover:bg-[#D4AF37] transition-colors flex items-center justify-center gap-2"
+                            >
+                                <PhoneIcon className="w-5 h-5" />
+                                Hubungi via WhatsApp
+                            </button>
                         </div>
                     </div>
                 </div>
